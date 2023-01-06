@@ -17,8 +17,10 @@ executeQuery = (query) => {
             }
             conn.query(query, (queryError, res) => {
                 if(queryError){
+                    conn.release();
                     return reject(queryError)
                 }
+                conn.release();
                 return resolve(res)
             })
         })
