@@ -1,5 +1,6 @@
 require("dotenv").config()
 const express = require("express")
+const Joi = require("joi")
 const mysql = require("mysql")
 
 pool = mysql.createPool({
@@ -8,6 +9,17 @@ pool = mysql.createPool({
     "password":process.env.MYSQL_PASSWORD,
     "database":process.env.MYSQL_DATABASE,
 })
+
+validateData = (req, res, rules) => {
+    const schema = Joi.object(rules);
+    const data = schema.validate(req.body, {
+        abortEarly:false
+    })
+    if(data.error){
+        return res.status(400).send(data.error);
+    }
+    return null
+}
 
 executeQuery = (query) => {
     return new Promise( (resolve, reject) => {
@@ -34,13 +46,27 @@ app.use(express.urlencoded({
 }))
 
 route.post('/register', async function (req, res){
+    let v = validateData(req, res, {
+        "email":Joi.string().email().required(),
+        "fullName":Joi.string().required(),
+        "password":Joi.string().min(8).required(),
+        "access":Joi.number().min(0).max(1).required()
+    })
+    if(v != null){
+        return v
+    }
     try{
         const email = req.body.email ?? ""
         const fullName = req.body.fullName ?? ""
         const password = req.body.password ?? ""
         const access = req.body.access ?? ""
-        //VALIDATE
-        let hasil = await executeQuery(`INSERT INTO users VALUES(${null}, "${email}","${password}","${fullName}",1,${access})`)
+        let hasil = await executeQuery(`SELECT * from users WHERE email='${email}'`)
+        if(hasil.length > 0){
+            return res.status(205).send({
+                "message":"Email sudah digunakan"
+            })
+        }
+        hasil = await executeQuery(`INSERT INTO users VALUES(${null}, "${email}","${password}","${fullName}",1,${access})`)
         if(hasil){
             return res.status(201).send({
                 "user":{
@@ -58,6 +84,13 @@ route.post('/register', async function (req, res){
 })
 
 route.post('/login', async function (req, res) { 
+    let v = validateData(req, res, {
+        "email":Joi.string().email().required(),
+        "password":Joi.string().required()
+    })
+    if(v != null){
+        return v
+    }   
     try{
         const email = req.body.email ?? ""
         const password = req.body.password ?? ""
@@ -72,13 +105,13 @@ route.post('/login', async function (req, res) {
                 })
             }
             else{
-                return res.status(201).send({
+                return res.status(205).send({
                     "message":"Wrong Password"
                 })
             }
         }
         else{
-            return res.status(202).send({
+            return res.status(205).send({
                 "message":"User not found"
             })
         }
