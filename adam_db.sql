@@ -16,6 +16,26 @@ CREATE DATABASE /*!32312 IF NOT EXISTS*/`adam_db` /*!40100 DEFAULT CHARACTER SET
 
 USE `adam_db`;
 
+/*Table structure for table `laporan` */
+
+DROP TABLE IF EXISTS `laporan`;
+
+CREATE TABLE `laporan` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `judul` varchar(100) NOT NULL,
+  `long` int(11) NOT NULL,
+  `lat` int(11) NOT NULL,
+  `kategori` int(11) NOT NULL,
+  `deskripsi` varchar(500) DEFAULT NULL,
+  `user_id` bigint(20) NOT NULL,
+  `status` int(11) NOT NULL DEFAULT 0,
+  PRIMARY KEY (`id`),
+  KEY `pelapor` (`user_id`),
+  CONSTRAINT `pelapor` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+/*Data for the table `laporan` */
+
 /*Table structure for table `users` */
 
 DROP TABLE IF EXISTS `users`;
@@ -28,36 +48,33 @@ CREATE TABLE `users` (
   `status` int(11) NOT NULL,
   `access` int(11) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 /*Data for the table `users` */
 
 insert  into `users`(`id`,`email`,`password`,`full_name`,`status`,`access`) values 
-(1,'alayna.kuhn','123','2022-12-04 13:32:47',0,0),
-(2,'derick44','123','2022-12-04 13:32:47',0,0),
-(3,'erobel','123','2022-12-04 13:32:47',0,0),
-(4,'eliza.jaskolski','123','2022-12-04 13:32:47',0,0),
-(5,'osinski.florida','123','2022-12-04 13:32:47',0,0),
-(6,'henry.langworth','123','2022-12-04 13:32:47',0,0),
-(7,'igutmann','123','2022-12-04 13:32:47',0,0),
-(8,'erin.bergstrom','123','2022-12-04 13:32:47',0,0),
-(9,'sporer.lesly','123','2022-12-04 13:32:47',0,0),
-(10,'pamela.murazik','123','2022-12-04 13:32:47',0,0),
-(11,'friesen.loy','123','2022-12-04 13:32:47',0,0),
-(12,'gerald99','123','2022-12-04 13:32:47',0,0),
-(13,'heathcote.alexa','123','2022-12-04 13:32:47',0,0),
-(14,'fcrona','123','2022-12-04 13:32:47',0,0),
-(15,'hortense10','123','2022-12-04 13:32:47',0,0),
-(16,'tanner90','123','2022-12-04 13:32:47',0,0),
-(17,'dlabadie','123','2022-12-04 13:32:47',0,0),
-(18,'tlakin','123','2022-12-04 13:32:47',0,0),
-(19,'rogelio00','123','2022-12-04 13:32:47',0,0),
-(20,'anjali52','123','2022-12-04 13:32:47',0,0),
-(21,'olabadie','123','2022-12-04 13:32:47',0,0),
-(22,'dietrich.randi','123','2022-12-04 13:32:47',0,0),
-(23,'johnston.eloy','123','2022-12-04 13:32:47',0,0),
-(24,'lang.avery','123','2022-12-04 13:32:47',0,0),
-(25,'wolff.pietro','123','2022-12-04 13:32:47',0,0);
+(1,'Laurel74@hotmail.com','123','Laurel Kub',1,0),
+(2,'Adan.Gutkowski75@yahoo.com','123','Adan Gutkowski',1,0),
+(3,'Karolann_Hills62@yahoo.com','123','Karolann Hills',1,1),
+(4,'Precious.Pagac29@yahoo.com','123','Precious Pagac',1,0),
+(5,'Skyla.Purdy87@hotmail.com','123','Skyla Purdy',1,0),
+(6,'Herminio.Gleichner@yahoo.com','123','Herminio Gleichner',1,0),
+(7,'Francesco_Marquardt29@yahoo.com','123','Francesco Marquardt',1,1),
+(8,'Maida21@hotmail.com','123','Maida Murazik',1,1),
+(9,'Nikolas_Abbott@hotmail.com','123','Nikolas Abbott',1,0),
+(10,'Milford.Wunsch70@yahoo.com','123','Milford Wunsch',1,0),
+(11,'abc@gmail.com','123','anak bang cecep',1,0),
+(12,'Fredy26@hotmail.com','123','Fredy Rau',1,0),
+(13,'Katelin4@gmail.com','123','Katelin McLaughlin',1,0),
+(14,'Wilhelmine10@gmail.com','123','Wilhelmine Ferry',1,0),
+(15,'Harold.Schneider37@yahoo.com','123','Harold Schneider',1,1),
+(16,'Gwen.Pfeffer92@hotmail.com','123','Gwen Pfeffer',1,0),
+(17,'Aliyah.Schulist66@hotmail.com','123','Aliyah Schulist',1,0),
+(18,'Shana_Schimmel@hotmail.com','123','Shana Schimmel',1,0),
+(19,'Leopoldo_Schmitt85@gmail.com','123','Leopoldo Schmitt',1,0),
+(20,'Pedro_Blick@hotmail.com','123','Pedro Blick',1,1),
+(21,'Malinda.Christiansen@gmail.com','123','Malinda Christiansen',1,0),
+(22,'anderson@gmail.com','123','anderson',1,1);
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
