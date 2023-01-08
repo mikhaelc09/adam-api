@@ -101,7 +101,7 @@ route.post('/login', async function (req, res) {
                     "message":"logged in",
                     "access":hasil[0].access,
                     "email":email,
-                    "fullName":hasil[0].fullName
+                    "fullName":hasil[0].full_name
                 })
             }
             else{
