@@ -123,6 +123,69 @@ route.post('/login', async function (req, res) {
 })
 
 
+
+route.put('/user', async function(req, res) {
+    try{
+        const oldEmail = req.body.oldEmail ?? ""
+        const email = req.body.email ?? ""
+        const fullName = req.body.fullName ?? ""
+        const password = req.body.password ?? ""
+        let hasil = await executeQuery(`select * from users where email='${oldEmail}'`)
+        if(hasil.length == 0){
+            return res.status(401).send({
+                "message":"User tidak dapat ditemukan!"
+            })
+        }
+        const user = hasil[0]
+        let query = "update users set"
+        let setStatus = 0
+        if(email){
+            if(setStatus){
+                query += ","
+            }
+            query += ` email='${email}'`
+            setStatus = 1
+        }
+        if(fullName){
+            if(setStatus){
+                query += ","
+            }
+            query += ` full_name='${fullName}'`
+            setStatus = 1
+        }
+        if(password){
+            if(setStatus){
+                query += ","
+            }
+            query += ` password='${password}'`
+            setStatus = 1
+        }
+        query += ` where id=${user.id}`
+        hasil = await executeQuery(query)
+        if(hasil){
+            hasil = await executeQuery(`select * from users where id=${user.id}`)
+            if(hasil){
+                let user = hasil[0]
+                return res.status(200).send({
+                    "message":"Berhasil update",
+                    "email":user.email,
+                    "full_name":user.full_name,
+                    "status":user.status,
+                    "access":user.access,
+                })
+            }
+            return res.status(205).send({
+                "message":"Gagal update"
+            })
+        }
+    }
+    catch(err){
+        console.log(err)
+        return res.status(500).send(err)
+    }
+})
+
+
 const port = process.env.PORT
 app.use('/api', route)
 app.listen(port, () => {
