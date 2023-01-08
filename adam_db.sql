@@ -23,8 +23,7 @@ DROP TABLE IF EXISTS `laporan`;
 CREATE TABLE `laporan` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `judul` varchar(100) NOT NULL,
-  `long` int(11) NOT NULL,
-  `lat` int(11) NOT NULL,
+  `location_id` varchar(60) NOT NULL,
   `kategori` int(11) NOT NULL,
   `deskripsi` varchar(500) DEFAULT NULL,
   `user_id` bigint(20) NOT NULL,
@@ -48,7 +47,7 @@ CREATE TABLE `users` (
   `status` int(11) NOT NULL,
   `access` int(11) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 /*Data for the table `users` */
 
@@ -74,7 +73,8 @@ insert  into `users`(`id`,`email`,`password`,`full_name`,`status`,`access`) valu
 (19,'Leopoldo_Schmitt85@gmail.com','123','Leopoldo Schmitt',1,0),
 (20,'Pedro_Blick@hotmail.com','123','Pedro Blick',1,1),
 (21,'Malinda.Christiansen@gmail.com','123','Malinda Christiansen',1,0),
-(22,'anderson@gmail.com','123','anderson',1,1);
+(22,'anderson@gmail.com','123','anderson',1,1),
+(23,'rick@gmail.com','12345678','Rick',1,1);
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
