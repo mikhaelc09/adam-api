@@ -36,7 +36,7 @@ async function seed(){
         }
         newUser.email = faker.internet.email(newUser.firstName, newUser.lastName)
         newUser.access = Math.floor(Math.random() * 100 / 80)
-        var query = `INSERT INTO users VALUES(${null},"${newUser.email}","123","${newUser.firstName} ${newUser.lastName}",1,${newUser.access});`
+        var query = `INSERT INTO users VALUES(${null},"${newUser.email}","12345678","${newUser.firstName} ${newUser.lastName}",1,${newUser.access});`
         let x = executeQuery(await query)
         console.log(await x)
     }
