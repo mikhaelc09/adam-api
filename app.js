@@ -72,13 +72,13 @@ route.post('/login', async function (req, res) {
                 })
             }
             else{
-                return res.status(400).send({
+                return res.status(201).send({
                     "message":"Wrong Password"
                 })
             }
         }
         else{
-            return res.status(404).send({
+            return res.status(202).send({
                 "message":"User not found"
             })
         }
