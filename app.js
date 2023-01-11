@@ -2,6 +2,7 @@ require("dotenv").config()
 const express = require("express")
 const Joi = require("joi")
 const mysql = require("mysql")
+const axios = require("axios")
 
 pool = mysql.createPool({
     "host":process.env.MYSQL_HOST,
@@ -176,6 +177,73 @@ route.put('/user', async function(req, res) {
             }
             return res.status(205).send({
                 "message":"Gagal update"
+            })
+        }
+    }
+    catch(err){
+        console.log(err)
+        return res.status(500).send(err)
+    }
+})
+
+route.post('/laporan', async function(req, res){
+    let v = validateData(req, res, {
+        "judul":Joi.string().required(),
+        "location_id":Joi.string().required(),
+        "kategori":Joi.string().required(),
+        "deskripsi":Joi.any().optional(),
+        "user_id":Joi.number().required(),
+    })
+    if(v != null){
+        return v
+    }
+    try{
+        const judul = req.body.judul ?? ""
+        const location_id = req.body.location_id ?? ""
+        const kategori = req.body.kategori ?? ""
+        const deskripsi = req.body.deskripsi ?? ""
+        const user_id = req.body.user_id ?? ""
+        let hasil = await executeQuery(`INSERT INTO laporan values(${null},'${judul}','${location_id}', '${kategori}', '${deskripsi}', ${user_id}, 0)`)
+        if(hasil){
+            let hasil = await executeQuery(`select * from users where id=${user_id}`)
+            let pelapor = hasil[0]
+            delete pelapor.password
+            delete pelapor.status
+            delete pelapor.access
+            let location__id, location__judul, location__alamat;
+            (await axios.get(`https://lookup.search.hereapi.com/v1/lookup?id=${location_id}&apiKey=${process.env.HERE_API_KEY}`)
+                .then(function(response){
+                let location = response.data
+                if(location.status){
+                    return ()=>{
+                        res.status(400).send({
+                            "message":"Location unknown"
+                        })
+                    }
+                }
+                location__id = location.id
+                location__judul = location.title
+                location__alamat = location.address.label
+                return ()=> {
+                    console.log({
+                        "id":location__id,
+                        "judul":location__judul,
+                        "alamat":location__alamat,
+                    })
+                }
+            }))()
+            return res.status(201).send({
+                "laporan":{
+                    "judul":judul,
+                    "location":{
+                        "id":location__id,
+                        "judul":location__judul,
+                        "alamat":location__alamat,
+                    },
+                    "kategori":kategori,
+                    "deskripsi":deskripsi,
+                    "pelapor":pelapor,
+                }
             })
         }
     }
