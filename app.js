@@ -253,6 +253,34 @@ route.post('/laporan', async function(req, res){
     }
 })
 
+route.get('/laporan', async function (req, res) { 
+    try{
+        let laporan = await executeQuery(`select laporan.judul, laporan.location_id, laporan.kategori, laporan.deskripsi, users.full_name, laporan.status from laporan JOIN users ON laporan.user_id = users.id`)
+        for(let i =0 ; i < laporan.length; i++){
+            let location_id = laporan[i].location_id;
+            let location
+            await axios.get(`https://lookup.search.hereapi.com/v1/lookup?id=${location_id}&apiKey=${process.env.HERE_API_KEY}`)
+                .then((res) => {
+                    let hasil = res.data
+                    location = {
+                        "id":hasil.id,
+                        "judul":hasil.title,
+                        "alamat":hasil.address.label,
+                    }
+                })
+            console.log(location)
+            laporan[i].location = location
+            delete laporan[i].location_id
+        }
+        return res.status(200).send({
+            "laporan":laporan
+        })
+    }
+    catch(err){
+        console.log(err)
+        return res.status(500).send(err)
+    }
+})
 
 const port = process.env.PORT
 app.use('/api', route)
