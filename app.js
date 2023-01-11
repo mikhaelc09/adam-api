@@ -85,13 +85,6 @@ route.post('/register', async function (req, res){
 })
 
 route.post('/login', async function (req, res) { 
-    let v = validateData(req, res, {
-        "email":Joi.string().email().required(),
-        "password":Joi.string().required()
-    })
-    if(v != null){
-        return v
-    }   
     try{
         const email = req.body.email ?? ""
         const password = req.body.password ?? ""
@@ -187,58 +180,35 @@ route.put('/user', async function(req, res) {
 })
 
 route.post('/laporan', async function(req, res){
-    let v = validateData(req, res, {
-        "judul":Joi.string().required(),
-        "location_id":Joi.string().required(),
-        "kategori":Joi.string().required(),
-        "deskripsi":Joi.any().optional(),
-        "user_id":Joi.number().required(),
-    })
-    if(v != null){
-        return v
-    }
     try{
         const judul = req.body.judul ?? ""
-        const location_id = req.body.location_id ?? ""
+        const location_nama = req.body.location_nama ?? ""
+        const location_position = req.body.location_position ?? ""
         const kategori = req.body.kategori ?? ""
         const deskripsi = req.body.deskripsi ?? ""
-        const user_id = req.body.user_id ?? ""
-        let hasil = await executeQuery(`INSERT INTO laporan values(${null},'${judul}','${location_id}', '${kategori}', '${deskripsi}', ${user_id}, 0)`)
+        const user_email = req.body.user_email ?? ""
+        let hasil = await executeQuery(`SELECT * FROM users WHERE email='${user_email}'`)
+        if(!hasil){
+            return res.status(404).send({
+                "message":"user not found!"
+            })
+        }
+        let user_id = hasil[0].id
+        location_position_tokenized = location_position.split(",")
+        hasil = await executeQuery(`INSERT INTO laporan values(${null},'${judul}','${location_nama}',${location_position_tokenized[0]},${location_position_tokenized[1]}, '${kategori}', '${deskripsi}', ${user_id}, 0)`)
         if(hasil){
             let hasil = await executeQuery(`select * from users where id=${user_id}`)
             let pelapor = hasil[0]
             delete pelapor.password
             delete pelapor.status
             delete pelapor.access
-            let location__id, location__judul, location__alamat;
-            (await axios.get(`https://lookup.search.hereapi.com/v1/lookup?id=${location_id}&apiKey=${process.env.HERE_API_KEY}`)
-                .then(function(response){
-                let location = response.data
-                if(location.status){
-                    return ()=>{
-                        res.status(400).send({
-                            "message":"Location unknown"
-                        })
-                    }
-                }
-                location__id = location.id
-                location__judul = location.title
-                location__alamat = location.address.label
-                return ()=> {
-                    console.log({
-                        "id":location__id,
-                        "judul":location__judul,
-                        "alamat":location__alamat,
-                    })
-                }
-            }))()
             return res.status(201).send({
                 "laporan":{
                     "judul":judul,
                     "location":{
-                        "id":location__id,
-                        "judul":location__judul,
-                        "alamat":location__alamat,
+                        "nama":location_nama,
+                        "lng":location_position_tokenized[0],
+                        "lat":location_position_tokenized[1],
                     },
                     "kategori":kategori,
                     "deskripsi":deskripsi,
@@ -255,23 +225,7 @@ route.post('/laporan', async function(req, res){
 
 route.get('/laporan', async function (req, res) { 
     try{
-        let laporan = await executeQuery(`select laporan.judul, laporan.location_id, laporan.kategori, laporan.deskripsi, users.full_name, laporan.status from laporan JOIN users ON laporan.user_id = users.id`)
-        for(let i =0 ; i < laporan.length; i++){
-            let location_id = laporan[i].location_id;
-            let location
-            await axios.get(`https://lookup.search.hereapi.com/v1/lookup?id=${location_id}&apiKey=${process.env.HERE_API_KEY}`)
-                .then((res) => {
-                    let hasil = res.data
-                    location = {
-                        "id":hasil.id,
-                        "judul":hasil.title,
-                        "alamat":hasil.address.label,
-                    }
-                })
-            console.log(location)
-            laporan[i].location = location
-            delete laporan[i].location_id
-        }
+        let laporan = await executeQuery(`select laporan.judul, laporan.location_nama, laporan.location_lng, laporan.location_lat, laporan.kategori, laporan.deskripsi, users.full_name, laporan.status from laporan JOIN users ON laporan.user_id = users.id`)
         return res.status(200).send({
             "laporan":laporan
         })

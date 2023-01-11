@@ -23,7 +23,9 @@ DROP TABLE IF EXISTS `laporan`;
 CREATE TABLE `laporan` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `judul` varchar(100) NOT NULL,
-  `location_id` varchar(60) NOT NULL,
+  `location_nama` varchar(500) NOT NULL,
+  `location_lng` double DEFAULT NULL,
+  `location_lat` double DEFAULT NULL,
   `kategori` int(11) NOT NULL,
   `deskripsi` varchar(500) DEFAULT NULL,
   `user_id` bigint(20) NOT NULL,
@@ -31,9 +33,13 @@ CREATE TABLE `laporan` (
   PRIMARY KEY (`id`),
   KEY `pelapor` (`user_id`),
   CONSTRAINT `pelapor` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4;
 
 /*Data for the table `laporan` */
+
+insert  into `laporan`(`id`,`judul`,`location_nama`,`location_lng`,`location_lat`,`kategori`,`deskripsi`,`user_id`,`status`) values 
+(1,'tabrakan 2 motor','Jalan Raya Darmo, Surabaya, Indonesia',112.73926,-7.28875,0,'',11,0),
+(13,'hilang 4 hari','Jalan Kertajaya, Surabaya, Indonesia',112.75621,-7.27828,3,'anak anak laki baju biru',11,0);
 
 /*Table structure for table `users` */
 
